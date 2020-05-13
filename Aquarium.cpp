@@ -5,10 +5,11 @@
 #include "Aquarium.h"
 
 #include <SFML/Window.hpp>
+#include <iostream>
 
-Aquarium::Aquarium(sf::Vector2u size, sf::Time timeStep)
-  : window{ { size.x, size.y }, "Aquarium" }
-  , milieu{ static_cast<sf::Vector2f>(size) }
+Aquarium::Aquarium(sf::Vector2u taille, sf::Time timeStep)
+  : window{ { taille.x, taille.y }, "Aquarium" }
+  , milieu{ { {}, static_cast<sf::Vector2f>(taille) } }
   , timeStep{ timeStep }
 {
     auto const framerateLimit = static_cast<unsigned int>(1.0f / timeStep.asSeconds());

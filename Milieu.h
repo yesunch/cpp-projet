@@ -10,20 +10,22 @@
 #include <vector>
 
 #include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/System/Time.hpp>
 
 class Milieu : public sf::Drawable
 {
   public:
-    explicit Milieu(sf::Vector2f const size);
+    explicit Milieu(sf::FloatRect bords);
 
     void update(sf::Time timeStep);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-    sf::Vector2f getSize() const;
+    sf::Vector2f getTaille() const;
 
   private:
-    sf::Vector2f const size;
+    sf::FloatRect const bords;
 
     Bestiole::Id nextBestioleId;
     std::vector<Bestiole> bestioles;

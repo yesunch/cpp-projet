@@ -3,7 +3,7 @@ project(bestioles)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(bestioles main.cpp Aquarium.cpp Aquarium.h Milieu.cpp Milieu.h Bestiole.cpp Bestiole.h Espece.cpp Espece.h)
+add_executable(bestioles main.cpp Aquarium.cpp Aquarium.h Milieu.cpp Milieu.h Bestiole.cpp Bestiole.h Espece.cpp Espece.h GenerateurAleatoire.cpp GenerateurAleatoire.h ObservationBestiole.cpp ObservationBestiole.h)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")
 find_package(SFML REQUIRED system window graphics network audio)

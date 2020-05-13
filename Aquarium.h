@@ -12,7 +12,7 @@
 class Aquarium
 {
   public:
-    Aquarium(sf::Vector2u size, sf::Time timeStep);
+    Aquarium(sf::Vector2u taille, sf::Time timeStep);
 
     void run();
 
