@@ -1,11 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 project(bestioles)
 
 set(CMAKE_CXX_STANDARD 14)
-set(SFML_BUILD_AUDIO false)
-set(SFML_BUILD_NETWORK false)
-
-add_subdirectory(SFML-2.5.1)
 
 add_executable(bestioles main.cpp Aquarium.cpp Aquarium.h Milieu.cpp Milieu.h Bestiole.cpp Bestiole.h Espece.cpp Espece.h)
 
