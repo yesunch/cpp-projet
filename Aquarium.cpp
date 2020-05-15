@@ -19,8 +19,10 @@ Aquarium::Aquarium(sf::Vector2u taille, sf::Time timeStep)
 }
 
 void
-Aquarium::run()
+Aquarium::run(PopulationFactory& populationFactory)
 {
+    milieu.initialiserPopulation(populationFactory);
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -36,7 +38,7 @@ Aquarium::run()
             }
         }
 
-        milieu.update(timeStep);
+        milieu.update(populationFactory, timeStep);
 
         window.clear();
         window.draw(milieu);

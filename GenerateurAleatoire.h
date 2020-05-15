@@ -8,11 +8,15 @@
 #include <random>
 
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/System/Vector2.hpp>
 
 class GenerateurAleatoire
 {
   public:
     static GenerateurAleatoire& getSingleton();
+
+    bool uniformBernoulli();
 
     template<typename T>
     T uniformInt(T min, T max)
@@ -28,7 +32,18 @@ class GenerateurAleatoire
         return urd(gen);
     }
 
+    float uniformRotation();
+    sf::Vector2f uniformPoint(sf::FloatRect bords);
+    sf::Vector2f uniformUnit();
+
     sf::Color uniformColor();
+
+    template<typename... Args>
+    auto discrete(Args&&... args)
+    {
+        std::discrete_distribution<> dd(std::forward<Args>(args)...);
+        return dd(gen);
+    }
 
   private:
     GenerateurAleatoire();

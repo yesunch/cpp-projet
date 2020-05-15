@@ -6,6 +6,7 @@
 #define BESTIOLES_MILIEU_H
 
 #include "Bestiole.h"
+#include "PopulationFactory.h"
 
 #include <vector>
 
@@ -19,7 +20,11 @@ class Milieu : public sf::Drawable
   public:
     explicit Milieu(sf::FloatRect bords);
 
-    void update(sf::Time timeStep);
+    void initialiserPopulation(PopulationFactory& populationFactory);
+
+    void update(PopulationFactory& populationFactory, sf::Time timeStep);
+    void handleCollisions(sf::Time timeStep);
+
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     sf::Vector2f getTaille() const;
@@ -27,7 +32,8 @@ class Milieu : public sf::Drawable
   private:
     sf::FloatRect const bords;
 
-    Bestiole::Id nextBestioleId;
+    BestioleId nextBestioleId;
+
     std::vector<Bestiole> bestioles;
 };
 

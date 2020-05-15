@@ -3,3 +3,9 @@
 //
 
 #include "ObservationBestiole.h"
+
+bool
+ObservationBestiole::operator<(const ObservationBestiole& autreObs) const
+{
+    return distance < autreObs.distance;
+}

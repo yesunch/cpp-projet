@@ -5,10 +5,25 @@
 #ifndef BESTIOLES_ESPECE_H
 #define BESTIOLES_ESPECE_H
 
-class Espece
+#include <functional>
+
+#include "Capteur.h"
+#include "Dissimulation.h"
+#include "Locomotion.h"
+#include "Protection.h"
+
+struct Espece
 {
-  public:
-  private:
+    float length;
+    float thickness;
+
+    Capteur::Ptr capteur;
+
+    Locomotion::Ptr locomotion;
+    Protection::Ptr protection;
+    Dissimulation::Ptr dissimulation;
+
+    Espece cloner() const;
 };
 
 #endif // BESTIOLES_ESPECE_H

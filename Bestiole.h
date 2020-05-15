@@ -5,6 +5,8 @@
 #ifndef BESTIOLES_BESTIOLE_H
 #define BESTIOLES_BESTIOLE_H
 
+#include "Collision.h"
+#include "Comportement.h"
 #include "Espece.h"
 #include "ObservationBestiole.h"
 
@@ -21,39 +23,55 @@ class Bestiole : public sf::Drawable
   public:
     using Id = unsigned int;
 
-    static constexpr auto NB_POINTS = 30;
-    static constexpr auto LENGTH = 64.0f;
+    static constexpr auto NB_POINTS = 15;
+    static constexpr auto LENGTH = 16.0f;
+    static constexpr auto BASE_SPEED = 10.0f;
 
   public:
-    Bestiole(Id id, Espece const& espece);
+    Bestiole(Id id, Espece espece, Comportement::Ptr comp);
     void buildEllipse();
 
     void update(std::vector<ObservationBestiole> const& bestiolesObservees,
                 sf::FloatRect bordsMilieu,
+                const std::function<void()>& seCloner,
+                const std::function<void()>& mourrir,
                 sf::Time timeStep);
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     sf::Vector2f getPosition() const;
+    sf::Vector2f getOrientation() const;
+    float getVitesse() const;
+    float getRotation() const;
     sf::Vector2f getVelocity() const;
+    sf::ConvexShape const& getShape() const;
 
-    bool contains(sf::Vector2f point);
-    bool intersects(sf::ConvexShape const& shape);
+    Capteur::Ptr const& getCapteur() const;
 
-    ObservationBestiole getObservation() const;
+    Espece clonerEspece() const;
+    Comportement::Ptr clonerComportement() const;
+
+    bool contains(sf::Vector2f point) const;
+    Collision testCollision(sf::ConvexShape const& shape) const;
+
+    ObservationBestiole creerObservation(float distanceObserveur) const;
 
     void setPosition(sf::Vector2f position);
-    void setVelocity(sf::Vector2f velocity);
+    void setRotation(float angle);
+    void setOrientation(sf::Vector2f orientation);
+
+    void etourdirPendant(sf::Time time);
 
   private:
     Id const id;
+    Espece espece;
+    Comportement::Ptr comportement;
 
     float length;
     float thickness;
-
     sf::ConvexShape ellipse;
 
-    sf::Vector2f velocity;
+    sf::Time etourdissement;
 };
 
 #endif // BESTIOLES_BESTIOLE_H
