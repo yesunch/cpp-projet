@@ -60,7 +60,7 @@ Milieu::handleCollisions(sf::Time timeStep)
             it1->setPosition(pos1);
             it1->setRotation(Util::angle(vel1));
             it1->etourdirPendant(sf::seconds(1.0f));
-            break;
+            continue;
         }
         if (bords.left + bords.width < bounds1.left + bounds1.width)
         {
@@ -69,7 +69,7 @@ Milieu::handleCollisions(sf::Time timeStep)
             it1->setPosition(pos1);
             it1->setOrientation(vel1);
             it1->etourdirPendant(sf::seconds(1.0f));
-            break;
+            continue;
         }
         if (bounds1.top < bords.top)
         {
@@ -78,7 +78,7 @@ Milieu::handleCollisions(sf::Time timeStep)
             it1->setPosition(pos1);
             it1->setRotation(Util::angle(vel1));
             it1->etourdirPendant(sf::seconds(1.0f));
-            break;
+            continue;
         }
         if (bords.top + bords.height < bounds1.top + bounds1.height)
         {
@@ -87,7 +87,7 @@ Milieu::handleCollisions(sf::Time timeStep)
             it1->setPosition(pos1);
             it1->setRotation(Util::angle(vel1));
             it1->etourdirPendant(sf::seconds(1.0f));
-            break;
+            continue;
         }
 
         for (auto it2 = bestioles.begin(); it2 != it1; ++it2)
@@ -110,8 +110,8 @@ Milieu::handleCollisions(sf::Time timeStep)
                     vel2 -= 2.0f * compNormale2;
                 }
 
-                pos1 += col.normale * timeStep.asSeconds();
-                pos2 -= col.normale * timeStep.asSeconds();
+                pos1 += 10.0f * col.normale * timeStep.asSeconds();
+                pos2 -= 10.0f * col.normale * timeStep.asSeconds();
 
                 it1->setPosition(pos1);
                 it2->setPosition(pos2);

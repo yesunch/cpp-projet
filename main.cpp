@@ -1,5 +1,6 @@
 #include "Aquarium.h"
 #include "ComportementGregaire.h"
+#include "ComportementPeureux.h"
 #include "PopParComportementFactory.h"
 
 #include <cmath>
@@ -15,10 +16,11 @@ main()
     {
         Aquarium aquarium{ taille, timeStep };
 
-        PopParComportementFactory popParCompFactory{ M_PI_4, M_PI, 10.0f, 20.0f, 20.0f,
-                                                     40.0f,  0.1f, 0.9f,  0.1f,  0.9f,
+        PopParComportementFactory popParCompFactory{ M_PI_4, M_PI, 10.0f, 50.0f, 50.0f,
+                                                     100.0f, 0.1f, 0.9f,  0.1f,  0.9f,
                                                      2.0f,   2.0f, 2.0f,  0.1f,  0.9f };
-        popParCompFactory.addComportement(std::make_unique<ComportementGregaire>(), 100);
+        popParCompFactory.addComportement(std::make_unique<ComportementGregaire>(), 50);
+        popParCompFactory.addComportement(std::make_unique<ComportementPeureux>(), 50);
 
         aquarium.run(popParCompFactory);
     }
