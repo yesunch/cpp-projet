@@ -20,6 +20,7 @@ class Util
     static float angle(sf::Vector2f vec1, sf::Vector2f vec2);
     static sf::Vector2f unit(float angle);
     static sf::Vector2f normalize(sf::Vector2f vec);
+    static sf::Vector2f rotate(sf::Vector2f vec, float angle);
 
     template<typename T>
     static T clamp(T min, T val, T max)

@@ -102,10 +102,11 @@ PopParComportementFactory::clonerBestiole(const Bestiole& bestiole)
 
     Bestiole clone{ nextBestioleId++, bestiole.clonerEspece(), bestiole.clonerComportement() };
 
+    auto const orientationBestiole = bestiole.getOrientation();
     auto const orientationClone =
-        Util::unit(Util::angle(bestiole.getOrientation()) + genAlea.uniformReal(-M_PI_2, M_PI_2));
+        Util::rotate(orientationBestiole, 0.1f * genAlea.uniformReal(-M_PI, M_PI));
     clone.setPosition(bestiole.getPosition() -
-                      1.5f * orientationClone * bestiole.getShape().getLocalBounds().width);
+                      1.25f * orientationClone * bestiole.getShape().getLocalBounds().width);
     clone.setOrientation(orientationClone);
     return std::move(clone);
 }
@@ -117,7 +118,7 @@ PopParComportementFactory::especeAleatoire() const
 
     auto& genAlea = GenerateurAleatoire::getSingleton();
 
-    espece.longueur = genAlea.uniformReal(10.0f, 30.0f);
+    espece.longueur = genAlea.uniformReal(15.0f, 25.0f);
     espece.epaisseur = espece.longueur * genAlea.uniformReal(0.5f, 0.75f);
     espece.dureeDeVie = sf::seconds(genAlea.uniformReal(15.0f, 45.0f));
 

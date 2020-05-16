@@ -25,8 +25,8 @@ class Bestiole : public sf::Drawable
 
     static constexpr auto NB_POINTS = 15;
     static constexpr auto VITESSE_DE_BASE = 30.0f;
-    static constexpr auto VULNERABILITE_CHOC = 0.6f;
-    static constexpr auto PROBABILITE_CLONAGE = 0.05f;
+    static constexpr auto VULNERABILITE_CHOC = 0.2f;
+    static constexpr auto PROBABILITE_CLONAGE = 0.1f;
 
   public:
     Bestiole(Id id, Espece espece, Comportement::Ptr comp);
@@ -54,7 +54,7 @@ class Bestiole : public sf::Drawable
     Espece clonerEspece() const;
     Comportement::Ptr clonerComportement() const;
 
-    bool contains(sf::Vector2f point) const;
+    float testOverlap(sf::Vector2f point0) const;
     Collision testCollision(sf::ConvexShape const& shape) const;
 
     ObservationBestiole etreObservee(float distanceObserveur, float angleObserveur) const;

@@ -66,3 +66,11 @@ Util::normalize(sf::Vector2f vec)
 {
     return vec /= magnitude(vec);
 }
+
+sf::Vector2f
+Util::rotate(sf::Vector2f vec, float angle)
+{
+    auto const cos = cosf(angle);
+    auto const sin = sinf(angle);
+    return { cos * vec.x + sin * vec.y, sin * vec.x - cos * vec.y };
+}

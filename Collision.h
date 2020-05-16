@@ -12,7 +12,7 @@ struct Collision
     Collision(bool happened);
 
     bool happened;
-    sf::Vector2f position;
+    float overlap;
     sf::Vector2f normale;
 
     explicit operator bool() const;

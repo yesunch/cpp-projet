@@ -145,8 +145,8 @@ Milieu::handleCollisions(sf::Time timeStep, std::vector<BestioleId>& bestiolesSu
                     vel2 -= 2.0f * compNormale2;
                 }
 
-                pos1 += col.normale * timeStep.asSeconds();
-                pos2 -= col.normale * timeStep.asSeconds();
+                pos1 += col.normale * col.overlap;
+                pos2 -= col.normale * col.overlap;
 
                 auto& genAlea = GenerateurAleatoire::getSingleton();
 

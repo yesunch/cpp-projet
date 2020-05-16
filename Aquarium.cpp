@@ -8,7 +8,7 @@
 #include <iostream>
 
 Aquarium::Aquarium(sf::Vector2u taille, sf::Time timeStep)
-  : window{ { taille.x, taille.y }, "Aquarium" }
+  : window{ { taille.x, taille.y }, "Aquarium", sf::Style::Close }
   , milieu{ { {}, static_cast<sf::Vector2f>(taille) } }
   , timeStep{ timeStep }
 {

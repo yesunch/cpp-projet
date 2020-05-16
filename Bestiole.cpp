@@ -128,27 +128,17 @@ Bestiole::draw(sf::RenderTarget& target, sf::RenderStates states) const
     }
 }
 
-bool
-Bestiole::contains(sf::Vector2f point0) const
+float
+Bestiole::testOverlap(sf::Vector2f point0) const
 {
-    auto const ellipseTransform = ellipse.getTransform();
-    auto const nbPoints = ellipse.getPointCount();
-    for (int i = 0; i < static_cast<int>(nbPoints) - 1; ++i)
-    {
-        auto const point1 = ellipseTransform.transformPoint(ellipse.getPoint(i));
-        auto const point2 = ellipseTransform.transformPoint(ellipse.getPoint(i + 1));
+    auto untransformedPos = getShape().getInverseTransform().transformPoint(point0);
+    auto const realAngle = Util::angle(untransformedPos);
+    auto const realLength = Util::magnitude(untransformedPos);
+    auto const expectedLength = Util::magnitude(
+        { 0.5f * espece.longueur * cosf(realAngle), 0.5f * espece.epaisseur * sinf(realAngle) });
+    auto const result = std::max(0.0f, expectedLength - realLength);
 
-        auto const vec1 = point1 - point0;
-        auto const vec2 = point2 - point0;
-        auto const det = Util::det(vec1, vec2);
-
-        if (det < 0)
-        {
-            return false;
-        }
-    }
-
-    return true;
+    return result;
 }
 
 Collision
@@ -160,10 +150,15 @@ Bestiole::testCollision(sf::ConvexShape const& shape) const
     {
         auto const shapeTransform = shape.getTransform();
         auto const pointShape = shapeTransform.transformPoint(shape.getPoint(i));
-        if (bords.contains(pointShape) && this->contains(pointShape))
+        if (!bords.contains(pointShape))
+        {
+            continue;
+        }
+
+        if (auto overlap = this->testOverlap(pointShape))
         {
             Collision collision{ true };
-            collision.position = pointShape;
+            collision.overlap = overlap;
 
             auto previousPointIndex = i - 1;
             if (previousPointIndex < 0)
