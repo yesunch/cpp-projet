@@ -1,6 +1,9 @@
 #include "Aquarium.h"
 #include "ComportementGregaire.h"
+#include "ComportementKamikaze.h"
+#include "ComportementPersonnaliteMultiples.h"
 #include "ComportementPeureux.h"
+#include "ComportementPrevoyant.h"
 #include "PopParComportementFactory.h"
 
 #include <cmath>
@@ -10,17 +13,28 @@ int
 main()
 {
     auto const taille = sf::Vector2u{ 640, 480 };
-    auto const timeStep = sf::seconds(1.0f / 25.0f);
+    auto const timeStep = sf::seconds(1.0f / 60.0f);
 
     try
     {
         Aquarium aquarium{ taille, timeStep };
 
-        PopParComportementFactory popParCompFactory{ M_PI_4, M_PI, 10.0f, 50.0f, 50.0f,
-                                                     100.0f, 0.1f, 0.9f,  0.1f,  0.9f,
-                                                     2.0f,   2.0f, 2.0f,  0.1f,  0.9f };
-        popParCompFactory.addComportement(std::make_unique<ComportementGregaire>(), 50);
-        popParCompFactory.addComportement(std::make_unique<ComportementPeureux>(), 50);
+        PopParComportementFactory popParCompFactory{ M_PI_4, M_PI_2, 30.0f, 50.0f, 50.0f,
+                                                     100.0f, 0.25f,  0.75f, 0.25f, 0.75f,
+                                                     1.5f,   1.5f,   2.0f,  0.25f, 0.75f };
+
+        std::vector<Comportement::Ptr> comportements;
+        comportements.emplace_back(std::make_unique<ComportementGregaire>());
+        comportements.emplace_back(std::make_unique<ComportementPeureux>());
+        comportements.emplace_back(std::make_unique<ComportementKamikaze>());
+        comportements.emplace_back(std::make_unique<ComportementPrevoyant>());
+        for (auto const& compPtr : comportements)
+        {
+            popParCompFactory.addComportement(compPtr->cloner(), 1);
+        }
+
+        popParCompFactory.addComportement(
+            std::make_unique<ComportementPersonnaliteMultiples>(std::move(comportements)), 1);
 
         aquarium.run(popParCompFactory);
     }

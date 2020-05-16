@@ -7,6 +7,8 @@
 
 #include "ObservationBestiole.h"
 
+class Bestiole;
+
 class Comportement
 {
   public:
@@ -14,10 +16,11 @@ class Comportement
     virtual Ptr cloner() = 0;
 
     virtual sf::Color getColor() const = 0;
+    virtual const char* getName() const = 0;
 
-    virtual float updateRotation(std::vector<ObservationBestiole> const& obsBestioles,
-                                 float currentRotation,
-                                 sf::Time timeStep) = 0;
+    virtual void update(std::vector<ObservationBestiole> const& obsBestioles,
+                        Bestiole& moiMeme,
+                        sf::Time timeStep) = 0;
 
     virtual ~Comportement() = default;
 };

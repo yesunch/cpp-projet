@@ -7,6 +7,8 @@
 
 #include "Capteur.h"
 
+#include <SFML/Graphics/VertexArray.hpp>
+
 class Yeux : public Capteur
 {
   public:
@@ -15,7 +17,9 @@ class Yeux : public Capteur
     Ptr cloner() override;
     std::vector<ObservationBestiole> capter(const std::vector<Bestiole>& bestioles,
                                             sf::Vector2f position,
-                                            sf::Vector2f orientation) const override;
+                                            sf::Vector2f orientation) override;
+
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     float getAlpha() const;
     float getDelta() const;
@@ -25,6 +29,9 @@ class Yeux : public Capteur
     float alpha;
     float delta;
     float gamma;
+
+    sf::Transformable transformable;
+    sf::VertexArray vertexArray;
 };
 
 #endif // BESTIOLES_YEUX_H

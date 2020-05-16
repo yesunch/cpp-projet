@@ -14,8 +14,9 @@
 
 struct Espece
 {
-    float length;
-    float thickness;
+    float longueur;
+    float epaisseur;
+    sf::Time dureeDeVie;
 
     Capteur::Ptr capteur;
 

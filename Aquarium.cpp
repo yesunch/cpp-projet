@@ -35,6 +35,11 @@ Aquarium::run(PopulationFactory& populationFactory)
                     window.close();
                     break;
                 }
+
+                default:
+                {
+                    break;
+                }
             }
         }
 

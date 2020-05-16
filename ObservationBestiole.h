@@ -12,10 +12,11 @@ using BestioleId = unsigned int;
 
 struct ObservationBestiole
 {
-    float distance;
+    float distanceToBestiole;
+    float angleToBestiole;
     float coeffDissimulation;
     sf::ConvexShape ellipse;
-    sf::Vector2f orientation;
+    sf::Vector2f velocity;
 
     bool operator<(ObservationBestiole const& autreObs) const;
 };

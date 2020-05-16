@@ -7,5 +7,5 @@
 bool
 ObservationBestiole::operator<(const ObservationBestiole& autreObs) const
 {
-    return distance < autreObs.distance;
+    return distanceToBestiole < autreObs.distanceToBestiole;
 }

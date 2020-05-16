@@ -3,6 +3,7 @@
 //
 
 #include "ComportementGregaire.h"
+#include "Bestiole.h"
 #include "Util.h"
 
 Comportement::Ptr
@@ -17,22 +18,28 @@ ComportementGregaire::getColor() const
     return sf::Color::Green;
 }
 
-float
-ComportementGregaire::updateRotation(std::vector<ObservationBestiole> const& obsBestioles,
-                                     float currentRotation,
-                                     sf::Time timeStep)
+const char*
+ComportementGregaire::getName() const
+{
+    return "grégaire";
+}
+
+void
+ComportementGregaire::update(std::vector<ObservationBestiole> const& obsBestioles,
+                             Bestiole& moiMeme,
+                             sf::Time timeStep)
 {
     if (obsBestioles.empty())
     {
-        return currentRotation;
+        return;
     }
 
     sf::Vector2f sum;
     for (auto const& obsBestiole : obsBestioles)
     {
-        sum += obsBestiole.orientation;
+        sum += obsBestiole.velocity;
     }
 
-    auto const deltaRotation = Util::angle(Util::unit(currentRotation), sum) * timeStep.asSeconds();
-    return currentRotation + deltaRotation;
+    auto const deltaRotation = Util::angle(moiMeme.getOrientation(), sum);
+    moiMeme.rotate(deltaRotation * timeStep.asSeconds());
 }

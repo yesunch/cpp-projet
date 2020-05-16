@@ -7,7 +7,9 @@
 
 #include <memory>
 
-class Protection
+#include <SFML/Graphics/Drawable.hpp>
+
+class Protection : public sf::Drawable
 {
   public:
     using Ptr = std::unique_ptr<Protection>;

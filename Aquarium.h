@@ -18,9 +18,9 @@ class Aquarium
     void run(PopulationFactory& populationFactory);
 
   private:
-    sf::Time const timeStep;
     sf::RenderWindow window;
     Milieu milieu;
+    sf::Time const timeStep;
 };
 
 #endif // BESTIOLES_AQUARIUM_H

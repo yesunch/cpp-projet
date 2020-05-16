@@ -17,13 +17,15 @@
 
 class Milieu : public sf::Drawable
 {
+    static constexpr auto TAUX_NATALITE = 0.1f;
+
   public:
     explicit Milieu(sf::FloatRect bords);
 
     void initialiserPopulation(PopulationFactory& populationFactory);
 
     void update(PopulationFactory& populationFactory, sf::Time timeStep);
-    void handleCollisions(sf::Time timeStep);
+    void handleCollisions(sf::Time timeStep, std::vector<BestioleId>& bestiolesSupprimees);
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
@@ -35,6 +37,8 @@ class Milieu : public sf::Drawable
     BestioleId nextBestioleId;
 
     std::vector<Bestiole> bestioles;
+
+    sf::Time tempsAvantProchaineNaissance;
 };
 
 #endif // BESTIOLES_MILIEU_H

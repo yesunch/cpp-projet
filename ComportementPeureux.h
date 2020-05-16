@@ -5,22 +5,23 @@
 #ifndef BESTIOLES_COMPORTEMENTPEUREUX_H
 #define BESTIOLES_COMPORTEMENTPEUREUX_H
 
+#include "Bestiole.h"
 #include "Comportement.h"
 
 class ComportementPeureux : public Comportement
 {
   public:
     static constexpr auto SEUIL_FUITE = 2;
-    static constexpr auto DUREE_FUITE = 1.0f;
 
     ComportementPeureux() = default;
     Ptr cloner() override;
 
     sf::Color getColor() const override;
+    const char* getName() const override;
 
-    float updateRotation(std::vector<ObservationBestiole> const& obsBestioles,
-                         float currentRotation,
-                         sf::Time timeStep) override;
+    void update(std::vector<ObservationBestiole> const& obsBestioles,
+                Bestiole& moiMeme,
+                sf::Time timeStep) override;
 
   private:
     sf::Time timeOut;

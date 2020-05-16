@@ -98,8 +98,15 @@ PopParComportementFactory::creerBestiole(sf::FloatRect bords)
 Bestiole
 PopParComportementFactory::clonerBestiole(const Bestiole& bestiole)
 {
+    auto& genAlea = GenerateurAleatoire::getSingleton();
+
     Bestiole clone{ nextBestioleId++, bestiole.clonerEspece(), bestiole.clonerComportement() };
-    clone.setPosition(bestiole.getPosition());
+
+    auto const orientationClone =
+        Util::unit(Util::angle(bestiole.getOrientation()) + genAlea.uniformReal(-M_PI_2, M_PI_2));
+    clone.setPosition(bestiole.getPosition() -
+                      1.5f * orientationClone * bestiole.getShape().getLocalBounds().width);
+    clone.setOrientation(orientationClone);
     return std::move(clone);
 }
 
@@ -110,8 +117,19 @@ PopParComportementFactory::especeAleatoire() const
 
     auto& genAlea = GenerateurAleatoire::getSingleton();
 
-    bool ajouterOreilles = genAlea.uniformBernoulli();
-    bool ajouterYeux = genAlea.uniformBernoulli();
+    espece.longueur = genAlea.uniformReal(10.0f, 30.0f);
+    espece.epaisseur = espece.longueur * genAlea.uniformReal(0.5f, 0.75f);
+    espece.dureeDeVie = sf::seconds(genAlea.uniformReal(15.0f, 45.0f));
+
+    enum TypeCapteur
+    {
+        OREILLES,
+        YEUX,
+        OREILLES_ET_YEUX
+    };
+
+    int typeCapteur = genAlea.uniformInt(0, 2);
+
     bool ajouterNageoires = genAlea.uniformBernoulli();
     bool ajouterCarapace = genAlea.uniformBernoulli();
     bool ajouterCamouflage = genAlea.uniformBernoulli();
@@ -130,17 +148,22 @@ PopParComportementFactory::especeAleatoire() const
 
     Oreilles oreilles{ deltaO, gammaO };
     Yeux yeux{ alpha, deltaY, gammaY };
-    if (ajouterOreilles && ajouterYeux)
+    switch (typeCapteur)
     {
-        espece.capteur = std::make_unique<OreillesEtYeux>(std::move(oreilles), std::move(yeux));
-    }
-    else if (ajouterOreilles)
-    {
-        espece.capteur = std::make_unique<Oreilles>(std::move(oreilles));
-    }
-    else if (ajouterYeux)
-    {
-        espece.capteur = std::make_unique<Yeux>(std::move(yeux));
+        case OREILLES:
+            espece.capteur = std::make_unique<Oreilles>(std::move(oreilles));
+            break;
+
+        case YEUX:
+            espece.capteur = std::make_unique<Oreilles>(std::move(oreilles));
+            break;
+
+        case OREILLES_ET_YEUX:
+            espece.capteur = std::make_unique<OreillesEtYeux>(std::move(oreilles), std::move(yeux));
+            break;
+
+        default:
+            throw std::runtime_error{ "Unhandled case" };
     }
 
     if (ajouterNageoires)

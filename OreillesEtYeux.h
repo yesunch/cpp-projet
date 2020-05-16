@@ -16,7 +16,9 @@ class OreillesEtYeux : public Capteur
     Ptr cloner() override;
     std::vector<ObservationBestiole> capter(const std::vector<Bestiole>& bestioles,
                                             sf::Vector2f position,
-                                            sf::Vector2f orientation) const override;
+                                            sf::Vector2f orientation) override;
+
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
     float getAlpha() const;
     float getDeltaO() const;

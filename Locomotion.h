@@ -7,7 +7,9 @@
 
 #include <memory>
 
-class Locomotion
+#include <SFML/Graphics/Drawable.hpp>
+
+class Locomotion : public sf::Drawable
 {
   public:
     using Ptr = std::unique_ptr<Locomotion>;

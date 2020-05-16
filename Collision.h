@@ -9,6 +9,8 @@
 
 struct Collision
 {
+    Collision(bool happened);
+
     bool happened;
     sf::Vector2f position;
     sf::Vector2f normale;

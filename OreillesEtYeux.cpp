@@ -2,8 +2,11 @@
 // Created by quentin on 14/05/2020.
 //
 
-#include "OreillesEtYeux.h"
 #include <set>
+
+#include <SFML/Graphics/RenderTarget.hpp>
+
+#include "OreillesEtYeux.h"
 
 OreillesEtYeux::OreillesEtYeux(Oreilles oreilles, Yeux yeux)
   : oreilles{ oreilles }
@@ -20,7 +23,7 @@ OreillesEtYeux::cloner()
 std::vector<ObservationBestiole>
 OreillesEtYeux::capter(const std::vector<Bestiole>& bestioles,
                        sf::Vector2f position,
-                       sf::Vector2f orientation) const
+                       sf::Vector2f orientation)
 {
     auto const obsOreilles = oreilles.capter(bestioles, position, orientation);
     auto const obsYeux = yeux.capter(bestioles, position, orientation);
@@ -30,6 +33,13 @@ OreillesEtYeux::capter(const std::vector<Bestiole>& bestioles,
     observations.insert(obsYeux.cbegin(), obsYeux.cend());
 
     return { observations.cbegin(), observations.cend() };
+}
+
+void
+OreillesEtYeux::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    target.draw(oreilles, states);
+    target.draw(yeux, states);
 }
 
 float

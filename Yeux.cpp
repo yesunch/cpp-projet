@@ -8,11 +8,25 @@
 
 #include <cmath>
 
+#include <SFML/Graphics/RenderTarget.hpp>
+
 Yeux::Yeux(float alpha, float delta, float gamma)
   : alpha{ alpha }
   , delta{ delta }
   , gamma{ gamma }
+  , vertexArray{ sf::TriangleFan, 20 }
 {
+    auto const vertexCount = vertexArray.getVertexCount();
+
+    vertexArray[0].position = {};
+    vertexArray[0].color = { 255, 0, 0, 50 };
+    for (size_t i = 1; i < vertexCount; ++i)
+    {
+        vertexArray[i].position =
+            delta *
+            Util::unit(-0.5f * alpha + (i - 1) / static_cast<float>(vertexCount - 2) * alpha);
+        vertexArray[i].color = { 255, 255, 255, 0 };
+    }
 }
 
 Capteur::Ptr
@@ -24,8 +38,11 @@ Yeux::cloner()
 std::vector<ObservationBestiole>
 Yeux::capter(const std::vector<Bestiole>& bestioles,
              sf::Vector2f position,
-             sf::Vector2f orientation) const
+             sf::Vector2f orientation)
 {
+    transformable.setPosition(position);
+    transformable.setRotation(Util::angle(orientation) * 180.0f * M_1_PI);
+
     std::vector<ObservationBestiole> observations;
     for (auto const& bestiole : bestioles)
     {
@@ -35,7 +52,7 @@ Yeux::capter(const std::vector<Bestiole>& bestioles,
 
         if (0.0f < distance && distance < delta && 2.0f * fabs(angle) < alpha)
         {
-            auto observation = bestiole.creerObservation(distance);
+            auto observation = bestiole.etreObservee(distance, angle);
             if (gamma > observation.coeffDissimulation)
             {
                 observations.emplace_back(std::move(observation));
@@ -44,6 +61,13 @@ Yeux::capter(const std::vector<Bestiole>& bestioles,
     }
 
     return std::move(observations);
+}
+
+void
+Yeux::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    states.transform *= transformable.getTransform();
+    target.draw(vertexArray, states);
 }
 
 float

@@ -6,15 +6,15 @@
 #define BESTIOLES_CAPTEUR_H
 
 #include <memory>
+#include <vector>
 
 #include <SFML/System/Vector2.hpp>
-#include <vector>
 
 #include "ObservationBestiole.h"
 
 class Bestiole;
 
-class Capteur
+class Capteur : public sf::Drawable
 {
   public:
     using Ptr = std::unique_ptr<Capteur>;
@@ -22,7 +22,7 @@ class Capteur
 
     virtual std::vector<ObservationBestiole> capter(std::vector<Bestiole> const& bestioles,
                                                     sf::Vector2f position,
-                                                    sf::Vector2f orientation) const = 0;
+                                                    sf::Vector2f orientation) = 0;
 
     virtual ~Capteur() = default;
 };

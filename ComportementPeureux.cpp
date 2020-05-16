@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "ComportementPeureux.h"
+#include "GenerateurAleatoire.h"
 #include "Util.h"
 
 Comportement::Ptr
@@ -19,22 +20,29 @@ ComportementPeureux::getColor() const
     return sf::Color::Magenta;
 }
 
-float
-ComportementPeureux::updateRotation(const std::vector<ObservationBestiole>& obsBestioles,
-                                    float currentRotation,
-                                    sf::Time timeStep)
+const char*
+ComportementPeureux::getName() const
+{
+    return "peureux";
+}
+
+void
+ComportementPeureux::update(const std::vector<ObservationBestiole>& obsBestioles,
+                            Bestiole& moiMeme,
+                            sf::Time timeStep)
 {
     if (timeOut > sf::Time::Zero)
     {
         timeOut -= timeStep;
-        return currentRotation;
+        return;
     }
 
     if (obsBestioles.size() >= SEUIL_FUITE)
     {
-        timeOut = sf::seconds(DUREE_FUITE);
-        return currentRotation + M_PI;
+        auto& genAlea = GenerateurAleatoire::getSingleton();
+        timeOut = sf::seconds(genAlea.uniformReal(1.0f, 2.0f));
+        moiMeme.setOrientation(-moiMeme.getOrientation());
     }
 
-    return currentRotation;
+    return;
 }

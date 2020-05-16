@@ -7,10 +7,11 @@
 Espece
 Espece::cloner() const
 {
-    return { .length = length,
-             .thickness = thickness,
-             .capteur = capteur->cloner(),
-             .locomotion = locomotion->cloner(),
-             .protection = protection->cloner(),
-             .dissimulation = dissimulation->cloner() };
+    return { .longueur = longueur,
+             .epaisseur = epaisseur,
+             .dureeDeVie = dureeDeVie,
+             .capteur = capteur ? capteur->cloner() : nullptr,
+             .locomotion = locomotion ? locomotion->cloner() : nullptr,
+             .protection = protection ? protection->cloner() : nullptr,
+             .dissimulation = dissimulation ? dissimulation->cloner() : nullptr };
 }

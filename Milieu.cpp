@@ -12,6 +12,7 @@
 Milieu::Milieu(sf::FloatRect bords)
   : bords{ bords }
   , nextBestioleId{ 0 }
+  , tempsAvantProchaineNaissance{ sf::seconds(1.0f / TAUX_NATALITE) }
 {
 }
 
@@ -24,10 +25,22 @@ Milieu::initialiserPopulation(PopulationFactory& populationFactory)
 void
 Milieu::update(PopulationFactory& populationFactory, sf::Time timeStep)
 {
+    if (tempsAvantProchaineNaissance > sf::Time::Zero)
+    {
+        tempsAvantProchaineNaissance -= timeStep;
+    }
+    else
+    {
+        tempsAvantProchaineNaissance = sf::seconds(1.0f / TAUX_NATALITE);
+        bestioles.emplace_back(populationFactory.creerBestiole(bords));
+    }
+
+    std::vector<BestioleId> bestiolesSupprimees;
+    std::vector<BestioleId> bestiolesClonees;
+
     for (auto& bestiole : bestioles)
     {
         std::vector<ObservationBestiole> observations;
-
         auto const& capteur = bestiole.getCapteur();
         if (capteur)
         {
@@ -35,17 +48,43 @@ Milieu::update(PopulationFactory& populationFactory, sf::Time timeStep)
                 capteur->capter(bestioles, bestiole.getPosition(), bestiole.getOrientation());
         }
 
-        auto const seCloner = []() {};
-        auto const mourrir = []() {};
+        auto const seCloner = [&bestiolesClonees, id = bestiole.getId()]() {
+            bestiolesClonees.push_back(id);
+        };
+
+        auto const mourrir = [&bestiolesSupprimees, id = bestiole.getId()]() {
+            bestiolesSupprimees.push_back(id);
+        };
 
         bestiole.update(observations, bords, seCloner, mourrir, timeStep);
     }
 
-    handleCollisions(timeStep);
+    handleCollisions(timeStep, bestiolesSupprimees);
+
+    for (auto const idBestioleAcloner : bestiolesClonees)
+    {
+        auto bestioleIt = std::find_if(
+            bestioles.cbegin(), bestioles.cend(), [idBestioleAcloner](Bestiole const& b) {
+                return b.getId() == idBestioleAcloner;
+            });
+
+        if (bestioleIt != bestioles.cend())
+        {
+            bestioles.emplace_back(populationFactory.clonerBestiole(*bestioleIt));
+        }
+    }
+
+    auto const newLastBestioleIt = std::remove_if(
+        bestioles.begin(), bestioles.end(), [&bestiolesSupprimees](Bestiole const& b) {
+            auto idIt =
+                std::find(bestiolesSupprimees.cbegin(), bestiolesSupprimees.cend(), b.getId());
+            return idIt != bestiolesSupprimees.cend();
+        });
+    bestioles.erase(newLastBestioleIt, bestioles.cend());
 }
 
 void
-Milieu::handleCollisions(sf::Time timeStep)
+Milieu::handleCollisions(sf::Time timeStep, std::vector<BestioleId>& bestiolesSupprimees)
 {
     for (auto it1 = bestioles.begin(); it1 != bestioles.end(); ++it1)
     {
@@ -59,7 +98,6 @@ Milieu::handleCollisions(sf::Time timeStep)
             vel1.x = fabs(vel1.x);
             it1->setPosition(pos1);
             it1->setRotation(Util::angle(vel1));
-            it1->etourdirPendant(sf::seconds(1.0f));
             continue;
         }
         if (bords.left + bords.width < bounds1.left + bounds1.width)
@@ -68,7 +106,6 @@ Milieu::handleCollisions(sf::Time timeStep)
             vel1.x = -fabs(vel1.x);
             it1->setPosition(pos1);
             it1->setOrientation(vel1);
-            it1->etourdirPendant(sf::seconds(1.0f));
             continue;
         }
         if (bounds1.top < bords.top)
@@ -77,7 +114,6 @@ Milieu::handleCollisions(sf::Time timeStep)
             vel1.y = fabs(vel1.y);
             it1->setPosition(pos1);
             it1->setRotation(Util::angle(vel1));
-            it1->etourdirPendant(sf::seconds(1.0f));
             continue;
         }
         if (bords.top + bords.height < bounds1.top + bounds1.height)
@@ -86,7 +122,6 @@ Milieu::handleCollisions(sf::Time timeStep)
             vel1.y = -fabs(vel1.y);
             it1->setPosition(pos1);
             it1->setRotation(Util::angle(vel1));
-            it1->etourdirPendant(sf::seconds(1.0f));
             continue;
         }
 
@@ -110,15 +145,27 @@ Milieu::handleCollisions(sf::Time timeStep)
                     vel2 -= 2.0f * compNormale2;
                 }
 
-                pos1 += 10.0f * col.normale * timeStep.asSeconds();
-                pos2 -= 10.0f * col.normale * timeStep.asSeconds();
+                pos1 += col.normale * timeStep.asSeconds();
+                pos2 -= col.normale * timeStep.asSeconds();
+
+                auto& genAlea = GenerateurAleatoire::getSingleton();
+
+                auto const detruire1 = genAlea.uniformReal(0.0f, 1.0f);
+                if (detruire1 < Bestiole::VULNERABILITE_CHOC / it1->getCoeffResistance())
+                {
+                    bestiolesSupprimees.push_back(it1->getId());
+                }
+
+                auto const detruire2 = genAlea.uniformReal(0.0f, 1.0f);
+                if (detruire2 < Bestiole::VULNERABILITE_CHOC / it2->getCoeffResistance())
+                {
+                    bestiolesSupprimees.push_back(it2->getId());
+                }
 
                 it1->setPosition(pos1);
                 it2->setPosition(pos2);
                 it1->setRotation(Util::angle(vel1));
                 it2->setRotation(Util::angle(vel2));
-                it1->etourdirPendant(sf::seconds(1.0f));
-                it2->etourdirPendant(sf::seconds(1.0f));
 
                 break;
             }

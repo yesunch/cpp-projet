@@ -5,8 +5,6 @@
 #include "Bestiole.h"
 #include "Espece.h"
 #include "GenerateurAleatoire.h"
-#include "Oreilles.h"
-#include "OreillesEtYeux.h"
 #include "Util.h"
 #include "Yeux.h"
 
@@ -19,16 +17,18 @@ Bestiole::Bestiole(Bestiole::Id id, Espece espece, Comportement::Ptr comp)
   , espece{ std::move(espece) }
   , comportement{ std::move(comp) }
   , ellipse{ Bestiole::NB_POINTS }
-  , length{ Bestiole::LENGTH }
-  , thickness{ 0.5f * Bestiole::LENGTH }
-  , etourdissement{}
+  , dureeDeVie{ espece.dureeDeVie }
 {
     buildEllipse();
 
+    auto color = sf::Color::Black;
+
     if (comportement)
     {
-        ellipse.setFillColor(comportement->getColor());
+        color = comportement->getColor();
     }
+
+    ellipse.setFillColor(color);
 
     /*
     if (this->espece.dissimulation)
@@ -46,11 +46,11 @@ Bestiole::buildEllipse()
     auto const nbPoints = ellipse.getPointCount();
     auto const angleStep = 2.0f * M_PI / nbPoints;
 
-    for (int i = 0; i < nbPoints; ++i)
+    for (size_t i = 0; i < nbPoints; ++i)
     {
         auto point = Util::unit(i * angleStep);
-        point.x *= 0.5f * length;
-        point.y *= 0.5f * thickness;
+        point.x *= 0.5f * espece.longueur;
+        point.y *= 0.5f * espece.epaisseur;
 
         ellipse.setPoint(i, point);
     }
@@ -64,91 +64,68 @@ Bestiole::update(std::vector<ObservationBestiole> const& bestiolesObservees,
                  sf::Time timeStep)
 {
     auto deltaPos = getVelocity() * timeStep.asSeconds();
-    auto newRotation = getRotation();
-
     ellipse.move(deltaPos);
 
     if (comportement)
     {
-        newRotation = comportement->updateRotation(bestiolesObservees, getRotation(), timeStep);
+        comportement->update(bestiolesObservees, *this, timeStep);
+        ellipse.setFillColor(comportement->getColor());
     }
 
     ellipse.move(deltaPos);
-    setRotation(newRotation);
+
+    if (dureeDeVie > sf::Time::Zero)
+    {
+        dureeDeVie -= timeStep;
+        if (roundf(dureeDeVie.asSeconds()) != roundf((dureeDeVie + timeStep).asSeconds()))
+        {
+            auto& genAlea = GenerateurAleatoire::getSingleton();
+            if (genAlea.uniformReal(0.0f, 1.0f) < Bestiole::PROBABILITE_CLONAGE)
+            {
+                seCloner();
+            }
+        }
+    }
+    else
+    {
+        mourrir();
+    }
 }
 
 void
 Bestiole::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    /*
-    auto const oreilles = dynamic_cast<Oreilles*>(espece.capteur.get());
-    if (oreilles)
+    if (espece.capteur)
     {
-        auto const delta = oreilles->getDelta();
-        auto const gamma = oreilles->getGamma();
-
-        sf::CircleShape oreilleRayon{ delta, 15 };
-        oreilleRayon.setOrigin(delta, delta);
-        oreilleRayon.setPosition(getPosition());
-        oreilleRayon.setFillColor({ 255, 0, 0, static_cast<sf::Uint8>(255.0f * gamma) });
-
-        target.draw(oreilleRayon);
+        target.draw(*espece.capteur, states);
     }
 
-    auto const yeux = dynamic_cast<Yeux*>(espece.capteur.get());
-    if (yeux)
+    sf::Transformable accessoireTransform;
+    accessoireTransform.setPosition(getPosition());
+    accessoireTransform.rotate(getRotation() * 180.0f * M_1_PI);
+    accessoireTransform.scale(0.015f * espece.longueur, 0.03f * espece.epaisseur);
+
+    if (espece.dissimulation)
     {
-        auto const position = getPosition();
-        auto const rotation = getRotation();
-        auto const alpha = yeux->getAlpha();
-        auto const delta = yeux->getDelta();
-        auto const gamma = yeux->getGamma();
-
-        sf::VertexArray vertexArray{ sf::TriangleFan, 15 };
-        vertexArray[0].position = getPosition();
-        vertexArray[0].color = { 255, 0, 0, static_cast<sf::Uint8>(255.0f * gamma) };
-        for (int i = 1; i < 15; ++i)
-        {
-            vertexArray[i].position =
-                position + delta * Util::unit(rotation - 0.5f * alpha + (i - 1) / 14.0f * alpha);
-            vertexArray[i].color = { 255, 0, 0, static_cast<sf::Uint8>(255.0f * gamma) };
-        }
-
-        target.draw(vertexArray);
+        auto ellipseDissimulation = ellipse;
+        ellipseDissimulation.scale(1.25f, 1.25f);
+        ellipseDissimulation.setFillColor(sf::Color::Transparent);
+        ellipseDissimulation.setOutlineThickness(0.1f * espece.epaisseur);
+        ellipseDissimulation.setOutlineColor({ 0, 0, 0, 50 });
+        target.draw(ellipseDissimulation, states);
     }
 
-    auto const oreillesEtYeux = dynamic_cast<OreillesEtYeux*>(espece.capteur.get());
-    if (oreillesEtYeux)
-    {
-        auto const deltaO = oreillesEtYeux->getDeltaO();
-        auto const gammaO = oreillesEtYeux->getGammaO();
-
-        sf::CircleShape oreilleRayon{ deltaO, 15 };
-        oreilleRayon.setOrigin(deltaO, deltaO);
-        oreilleRayon.setPosition(getPosition());
-        oreilleRayon.setFillColor({ 255, 0, 0, static_cast<sf::Uint8>(255.0f * gammaO) });
-        target.draw(oreilleRayon);
-
-        auto const position = getPosition();
-        auto const rotation = getRotation();
-        auto const alpha = oreillesEtYeux->getAlpha();
-        auto const deltaY = oreillesEtYeux->getDeltaY();
-        auto const gammaY = oreillesEtYeux->getGammaY();
-
-        sf::VertexArray vertexArray{ sf::TriangleFan, 15 };
-        vertexArray[0].position = getPosition();
-        vertexArray[0].color = { 255, 0, 0, static_cast<sf::Uint8>(255.0f * gammaY) };
-        for (int i = 1; i < 15; ++i)
-        {
-            vertexArray[i].position =
-                position + deltaY * Util::unit(rotation - 0.5f * alpha + (i - 1) / 14.0f * alpha);
-            vertexArray[i].color = { 255, 0, 0, static_cast<sf::Uint8>(255.0f * gammaY) };
-        }
-
-        target.draw(vertexArray);
-    }
-*/
     target.draw(ellipse, states);
+
+    if (espece.locomotion)
+    {
+        target.draw(*espece.locomotion, states.transform * accessoireTransform.getTransform());
+    }
+
+    if (espece.protection)
+    {
+        target.draw(*espece.protection, states.transform * accessoireTransform.getTransform());
+    }
 }
 
 bool
@@ -156,7 +133,7 @@ Bestiole::contains(sf::Vector2f point0) const
 {
     auto const ellipseTransform = ellipse.getTransform();
     auto const nbPoints = ellipse.getPointCount();
-    for (int i = 0; i < nbPoints - 1; ++i)
+    for (int i = 0; i < static_cast<int>(nbPoints) - 1; ++i)
     {
         auto const point1 = ellipseTransform.transformPoint(ellipse.getPoint(i));
         auto const point2 = ellipseTransform.transformPoint(ellipse.getPoint(i + 1));
@@ -179,7 +156,7 @@ Bestiole::testCollision(sf::ConvexShape const& shape) const
 {
     auto const bords = this->ellipse.getGlobalBounds();
     auto const ellipseNbPoints = shape.getPointCount();
-    for (int i = 0; i < ellipseNbPoints; ++i)
+    for (int i = 0; i < static_cast<int>(ellipseNbPoints); ++i)
     {
         auto const shapeTransform = shape.getTransform();
         auto const pointShape = shapeTransform.transformPoint(shape.getPoint(i));
@@ -195,7 +172,7 @@ Bestiole::testCollision(sf::ConvexShape const& shape) const
             }
 
             auto nextPointIndex = i + 1;
-            if (ellipseNbPoints - 1 < nextPointIndex)
+            if (static_cast<int>(ellipseNbPoints) - 1 < nextPointIndex)
             {
                 nextPointIndex = 0;
             }
@@ -214,7 +191,7 @@ Bestiole::testCollision(sf::ConvexShape const& shape) const
 }
 
 ObservationBestiole
-Bestiole::creerObservation(float distanceObserveur) const
+Bestiole::etreObservee(float distanceObserveur, float angleObserveur) const
 {
     auto coeffDissimulation = 0.0f;
     if (espece.dissimulation)
@@ -222,7 +199,7 @@ Bestiole::creerObservation(float distanceObserveur) const
         coeffDissimulation = espece.dissimulation->getCoeffDissimulation();
     }
 
-    return { distanceObserveur, coeffDissimulation, ellipse, getOrientation() };
+    return { distanceObserveur, angleObserveur, coeffDissimulation, ellipse, getVelocity() };
 }
 
 sf::Vector2f
@@ -231,10 +208,16 @@ Bestiole::getPosition() const
     return ellipse.getPosition();
 }
 
+BestioleId
+Bestiole::getId() const
+{
+    return id;
+}
+
 float
 Bestiole::getVitesse() const
 {
-    auto vitesse = Bestiole::BASE_SPEED;
+    auto vitesse = Bestiole::VITESSE_DE_BASE;
 
     auto const& locomotion = espece.locomotion;
     if (locomotion)
@@ -278,6 +261,18 @@ Bestiole::getCapteur() const
     return espece.capteur;
 }
 
+float
+Bestiole::getCoeffResistance() const
+{
+    auto resistance = 1.0f;
+    if (espece.protection)
+    {
+        resistance = espece.protection->getCoeffResistance();
+    }
+
+    return resistance;
+}
+
 Espece
 Bestiole::clonerEspece() const
 {
@@ -316,7 +311,7 @@ Bestiole::setOrientation(sf::Vector2f orientation)
 }
 
 void
-Bestiole::etourdirPendant(sf::Time time)
+Bestiole::rotate(float angle)
 {
-    etourdissement = std::max(time, etourdissement);
+    setRotation(getRotation() + angle);
 }

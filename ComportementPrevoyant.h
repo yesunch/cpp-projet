@@ -1,13 +1,13 @@
 //
-// Created by quentin on 14/05/2020.
+// Created by quentin on 15/05/2020.
 //
 
-#ifndef BESTIOLES_COMPORTEMENTGREGAIRE_H
-#define BESTIOLES_COMPORTEMENTGREGAIRE_H
+#ifndef BESTIOLES_COMPORTEMENTPREVOYANT_H
+#define BESTIOLES_COMPORTEMENTPREVOYANT_H
 
 #include "Comportement.h"
 
-class ComportementGregaire : public Comportement
+class ComportementPrevoyant : public Comportement
 {
   public:
     Ptr cloner() override;
@@ -20,4 +20,4 @@ class ComportementGregaire : public Comportement
                 sf::Time timeStep) override;
 };
 
-#endif // BESTIOLES_COMPORTEMENTGREGAIRE_H
+#endif // BESTIOLES_COMPORTEMENTPREVOYANT_H
