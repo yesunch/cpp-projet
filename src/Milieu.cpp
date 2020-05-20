@@ -3,9 +3,11 @@
 //
 
 #include "../include/Milieu.h"
-#include "../include/comportement/ComportementGregaire.h"
 #include "../include/GenerateurAleatoire.h"
 #include "../include/Util.h"
+#include "../include/comportement/ComportementGregaire.h"
+
+#include <map>
 
 #include <SFML/Graphics.hpp>
 
@@ -24,8 +26,9 @@ Milieu::initialiserPopulation(PopulationFactory& populationFactory)
 
 /**
  * Update all of the bestioles one timeStep forward.
- * Decrease the waiting time for next round of bestiole creation. Check each bestiole whether it needs to be cloned or
- * it's already dead. Clone or delete the bestioles if they need to be processed.
+ * Decrease the waiting time for next round of bestiole creation. Check each bestiole whether it
+ * needs to be cloned or it's already dead. Clone or delete the bestioles if they need to be
+ * processed.
  *
  * @param populationFactory
  * @param timeStep
@@ -43,19 +46,23 @@ Milieu::update(PopulationFactory& populationFactory, sf::Time timeStep)
         bestioles.emplace_back(populationFactory.creerBestiole(bords));
     }
 
+    std::map<BestioleId, std::vector<ObservationBestiole>> bestiolesObservees;
     std::vector<BestioleId> bestiolesSupprimees;
     std::vector<BestioleId> bestiolesClonees;
 
     for (auto& bestiole : bestioles)
     {
-        std::vector<ObservationBestiole> observations;
         auto const& capteur = bestiole.getCapteur();
         if (capteur)
         {
-            observations =
-                capteur->capter(bestioles, bestiole.getPosition(), bestiole.getOrientation());
+            bestiolesObservees.insert(
+                { bestiole.getId(),
+                  capteur->capter(bestioles, bestiole.getPosition(), bestiole.getOrientation()) });
         }
+    }
 
+    for (auto& bestiole : bestioles)
+    {
         auto const seCloner = [&bestiolesClonees, id = bestiole.getId()]() {
             bestiolesClonees.push_back(id);
         };
@@ -64,20 +71,21 @@ Milieu::update(PopulationFactory& populationFactory, sf::Time timeStep)
             bestiolesSupprimees.push_back(id);
         };
 
-        bestiole.update(observations, bords, seCloner, mourrir, timeStep);
+        bestiole.update(bestiolesObservees[bestiole.getId()], bords, seCloner, mourrir, timeStep);
     }
 
     handleCollisions(timeStep, bestiolesSupprimees);
-    //Clone the bestioles which have the same Id with the Id saved in vector<BestioleId> bestiolesClonees
+    // Clone the bestioles which have the same Id with the Id saved in vector<BestioleId>
+    // bestiolesClonees
     for (auto const idBestioleAcloner : bestiolesClonees)
     {
-        //Find the corresponding bestiole in the list of bestiole which needs to be cloned
+        // Find the corresponding bestiole in the list of bestiole which needs to be cloned
         auto bestioleIt = std::find_if(
             bestioles.cbegin(), bestioles.cend(), [idBestioleAcloner](Bestiole const& b) {
                 return b.getId() == idBestioleAcloner;
             });
 
-        //Clone the bestiole and insert it into the bestiole list
+        // Clone the bestiole and insert it into the bestiole list
         if (bestioleIt != bestioles.cend())
         {
             bestioles.emplace_back(populationFactory.clonerBestiole(*bestioleIt));
@@ -94,8 +102,8 @@ Milieu::update(PopulationFactory& populationFactory, sf::Time timeStep)
 }
 
 /**
- * Process the case of collision between two bestioles. Add the dead bestiole into the dead bestioles list if
- * there's one get killed in the collision
+ * Process the case of collision between two bestioles. Add the dead bestiole into the dead
+ * bestioles list if there's one get killed in the collision
  * @param timeStep
  * @param bestiolesSupprimees
  */
@@ -107,8 +115,8 @@ Milieu::handleCollisions(sf::Time timeStep, std::vector<BestioleId>& bestiolesSu
         auto pos1 = it1->getPosition();
         auto vel1 = it1->getVelocity();
         auto const bounds1 = it1->getShape().getGlobalBounds();
-        //Check if there's a collision between the bestiole and the global boundary
-        //Collision on the left side of global bounday
+        // Check if there's a collision between the bestiole and the global boundary
+        // Collision on the left side of global bounday
         if (bounds1.left < bords.left)
         {
             pos1.x = bords.left + 0.5f * bounds1.width + 1.0f;
@@ -117,7 +125,7 @@ Milieu::handleCollisions(sf::Time timeStep, std::vector<BestioleId>& bestiolesSu
             it1->setRotation(Util::angle(vel1));
             continue;
         }
-        //Collision on the right side of global bounday
+        // Collision on the right side of global bounday
         if (bords.left + bords.width < bounds1.left + bounds1.width)
         {
             pos1.x = bords.left + bords.width - 0.5f * bounds1.width - 1.0f;
@@ -126,7 +134,7 @@ Milieu::handleCollisions(sf::Time timeStep, std::vector<BestioleId>& bestiolesSu
             it1->setOrientation(vel1);
             continue;
         }
-        //Collision on the top of global bounday
+        // Collision on the top of global bounday
         if (bounds1.top < bords.top)
         {
             pos1.y = bords.top + 0.5f * bounds1.height + 1.0f;
@@ -135,7 +143,7 @@ Milieu::handleCollisions(sf::Time timeStep, std::vector<BestioleId>& bestiolesSu
             it1->setRotation(Util::angle(vel1));
             continue;
         }
-        //Collision on the bottom of global bounday
+        // Collision on the bottom of global bounday
         if (bords.top + bords.height < bounds1.top + bounds1.height)
         {
             pos1.y = bords.top + bords.height - 0.5f * bounds1.height - 1.0f;
@@ -144,10 +152,10 @@ Milieu::handleCollisions(sf::Time timeStep, std::vector<BestioleId>& bestiolesSu
             it1->setRotation(Util::angle(vel1));
             continue;
         }
-        //Check if there's a collision among bestioles
+        // Check if there's a collision among bestioles
         for (auto it2 = bestioles.begin(); it2 != it1; ++it2)
         {
-            //If the collision happens, reset the new position and rotation of two bestioles
+            // If the collision happens, reset the new position and rotation of two bestioles
             if (auto col = it1->testCollision(it2->getShape()))
             {
                 auto pos2 = it2->getPosition();
@@ -193,7 +201,6 @@ Milieu::handleCollisions(sf::Time timeStep, std::vector<BestioleId>& bestiolesSu
         }
     }
 }
-
 
 void
 Milieu::draw(sf::RenderTarget& target, sf::RenderStates states) const
