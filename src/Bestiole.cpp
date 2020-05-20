@@ -13,7 +13,8 @@
 #include <SFML/Graphics.hpp>
 
 /**
- * Create a bestiole with certain bestiole id, espece, and behavior. Set the bestiole color according to the behavior color.
+ * Create a bestiole with certain bestiole id, espece, and behavior. Set the bestiole color
+ * according to the behavior color.
  * @param id
  * @param espece
  * @param comp
@@ -63,9 +64,10 @@ Bestiole::buildEllipse()
 }
 
 /**
- * Move the bestiole forward, invoke its comportement if there's one, and check if the bestiole is still alive.
- * If it's alive, calculate a random float and compare if with the clone probability. Clone it by the lambda funtion seCloner() if necessary
- * If it's not alive, do the lambda function mourir().
+ * Move the bestiole forward, invoke its comportement if there's one, and check if the bestiole is
+ * still alive. If it's alive, calculate a random float and compare if with the clone probability.
+ * Clone it by the lambda funtion seCloner() if necessary If it's not alive, do the lambda function
+ * mourir().
  * @param bestiolesObservees
  * @param bordsMilieu
  * @param seCloner
@@ -160,9 +162,10 @@ Bestiole::testOverlap(sf::Vector2f point0) const
 }
 
 /**
- * Check if this bestiole is hit by a certain bestiole represented by its shape. If there's a collision, return an object
- * of Collision with the normal vector which indicates the direction that would separate two bestioles. The normal vector
- * is orthogonal with the vector formed with the previousPoint and nextPoint of the overlapped point.
+ * Check if this bestiole is hit by a certain bestiole represented by its shape. If there's a
+ * collision, return an object of Collision with the normal vector which indicates the direction
+ * that would separate two bestioles. The normal vector is orthogonal with the vector formed with
+ * the previousPoint and nextPoint of the overlapped point.
  * @param shape
  * @return collision
  */
@@ -170,6 +173,12 @@ Collision
 Bestiole::testCollision(sf::ConvexShape const& shape) const
 {
     auto const bords = this->ellipse.getGlobalBounds();
+    auto const shapeBords = shape.getGlobalBounds();
+    if (!bords.intersects(shapeBords))
+    {
+        return Collision{ false };
+    }
+
     auto const ellipseNbPoints = shape.getPointCount();
     for (int i = 0; i < static_cast<int>(ellipseNbPoints); ++i)
     {
