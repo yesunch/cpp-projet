@@ -20,7 +20,7 @@ main()
         Aquarium aquarium{ taille, timeStep };
 
         PopParComportementFactory popParCompFactory{ M_PI_4, M_PI,  30.0f, 70.0f, 70.0f,
-                                                     100.0f, 0.25f, 0.75f, 0.25f, 0.75f,
+                                                     100.0f, 0.25f, 0.5f,  0.5f,  0.75f,
                                                      1.5f,   1.5f,  2.0f,  0.25f, 0.75f };
 
         std::vector<Comportement::Ptr> comportements;
