@@ -67,7 +67,7 @@ Util::distance(sf::Vector2f vec1, sf::Vector2f vec2)
 }
 
 /**
- * Calculate the signed angle between two vector
+ * Calculate the signed angle between two vector, the angle from vec1 to vec2
  * @param vec1
  * @param vec2
  * @return
@@ -75,18 +75,19 @@ Util::distance(sf::Vector2f vec1, sf::Vector2f vec2)
 float
 Util::angle(sf::Vector2f vec1, sf::Vector2f vec2)
 {
+    // absAngle is a radian (acosf(0) = pi/2, acosf(-1) = pi)
     auto absAngle = acosf(dot(normalize(vec1), normalize(vec2)));
     absAngle = clamp<float>(0.0f, absAngle, M_PI);
 
     auto const sign = det(vec1, vec2);
     if (sign > 0)
     {
-        // Turn counterclockwise 
+        // Turn clockwise 
         return absAngle;
     }
     else
     {
-        //  Turn clockwise
+        //  Turn counterclockwise
         return -absAngle;
     }
 }

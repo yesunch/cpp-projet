@@ -56,7 +56,7 @@ ComportementPrevoyant::update(const std::vector<ObservationBestiole>& obsBestiol
             futureClosestBestiole = bestioleIt;
         }
     }
-
+    // turn current bestiole's back towards the predicted position of the predicted nearest bestiole
     auto const angleAwayFutureClosestBestiole =
         Util::angle(currentOrientation, currentPos - futureClosestBestiolePos);
     moiMeme.rotate(angleAwayFutureClosestBestiole * timeStep.asSeconds());
