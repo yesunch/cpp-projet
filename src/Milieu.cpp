@@ -51,6 +51,7 @@ Milieu::update(PopulationFactory& populationFactory, sf::Time timeStep)
     std::vector<BestioleId> bestiolesSupprimees;
     std::vector<BestioleId> bestiolesClonees;
 
+    // get observable neighbors for each bestiole by its own capteur
     for (auto& bestiole : bestioles)
     {
         auto const& capteur = bestiole.getCapteur();
@@ -62,6 +63,7 @@ Milieu::update(PopulationFactory& populationFactory, sf::Time timeStep)
         }
     }
 
+    // Give seCloner and mourrir functions to each bestiole, let it use them by its need
     for (auto& bestiole : bestioles)
     {
         auto const seCloner = [&bestiolesClonees, id = bestiole.getId()]() {
@@ -92,13 +94,18 @@ Milieu::update(PopulationFactory& populationFactory, sf::Time timeStep)
             bestioles.emplace_back(populationFactory.clonerBestiole(*bestioleIt));
         }
     }
-
+    
+    // Sort bestioles, remove_if puts all bestioles which exist in bestiolesSupprimees at the end of the bestioles vector
+    // newLastBestioleIt is an iterator to the beginning of the needed to be deleted bestiole of the vector
     auto const newLastBestioleIt = std::remove_if(
         bestioles.begin(), bestioles.end(), [&bestiolesSupprimees](Bestiole const& b) {
             auto idIt =
                 std::find(bestiolesSupprimees.cbegin(), bestiolesSupprimees.cend(), b.getId());
             return idIt != bestiolesSupprimees.cend();
         });
+
+    // delete those bestioles between newLastBestioleIt and the end of bestioles.cend() 
+    // (bestiolesSupprimees) has been sorted in this range
     bestioles.erase(newLastBestioleIt, bestioles.cend());
 }
 
