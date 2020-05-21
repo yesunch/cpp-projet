@@ -30,6 +30,7 @@ ComportementPrevoyant::update(const std::vector<ObservationBestiole>& obsBestiol
                               sf::Time timeStep)
 {
     auto bestioleIt = obsBestioles.cbegin();
+    // if there is no obsBestioles
     if (bestioleIt == obsBestioles.cend())
     {
         return;
@@ -42,10 +43,12 @@ ComportementPrevoyant::update(const std::vector<ObservationBestiole>& obsBestiol
     sf::Vector2f futureClosestBestiolePos;
     auto futureClosestBestioleDist = std::numeric_limits<float>::max();
     auto futureClosestBestiole = bestioleIt;
+    // find nearest bestiole
     for (; bestioleIt != obsBestioles.cend(); ++bestioleIt)
     {
         auto const bestioleFuturePos = bestioleIt->ellipse.getPosition() + bestioleIt->velocity;
         auto const bestioleFutureDist = Util::distance(futurePos, bestioleFuturePos);
+
         if (bestioleFutureDist < futureClosestBestioleDist)
         {
             futureClosestBestiolePos = bestioleFuturePos;

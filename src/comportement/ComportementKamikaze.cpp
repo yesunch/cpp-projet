@@ -30,11 +30,12 @@ ComportementKamikaze::update(const std::vector<ObservationBestiole>& obsBestiole
 {
     auto const closestBestiole = std::min_element(obsBestioles.cbegin(), obsBestioles.cend());
 
+    // if closestBestiole points to the past-the-end element in obsBestioles
     if (closestBestiole == obsBestioles.cend())
     {
         return;
     }
-
+    // turn current bestiole to closestBestiole 
     auto const deltaRotation = closestBestiole->angleToBestiole;
     moiMeme.rotate(deltaRotation * timeStep.asSeconds());
 }

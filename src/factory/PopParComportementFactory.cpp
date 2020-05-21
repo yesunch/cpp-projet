@@ -83,8 +83,9 @@ PopParComportementFactory::creerBestiole(sf::FloatRect bords)
                    effectifParComp.cend(),
                    std::back_inserter(effectifs),
                    [](auto const& effPourComp) { return effPourComp.second; });
-
+    // effectifs contains five 1
     auto& genAlea = GenerateurAleatoire::getSingleton();
+    // generate an random integer during the range [0,5[
     auto randomCompIndex = genAlea.discrete(effectifs.cbegin(), effectifs.cend());
 
     auto comportement = effectifParComp[randomCompIndex].first->cloner();

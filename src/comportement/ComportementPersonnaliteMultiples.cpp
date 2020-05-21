@@ -9,7 +9,7 @@
 ComportementPersonnaliteMultiples::ComportementPersonnaliteMultiples(
     std::vector<Comportement::Ptr> comportements)
   : comportements{ std::move(comportements) }
-  , currentComportement{ this->comportements.front().get() }
+  , currentComportement{ this->comportements.front().get() } // get first comportement in comportement container
   , timeOut{ sf::seconds(DUREE_COMPORTEMENT) }
 {
     assert(!this->comportements.empty());
@@ -54,6 +54,6 @@ ComportementPersonnaliteMultiples::update(const std::vector<ObservationBestiole>
     auto& genAlea = GenerateurAleatoire::getSingleton();
     auto nextComportementIndex = genAlea.uniformInt<size_t>(0, comportements.size() - 1);
 
-    currentComportement = comportements[nextComportementIndex].get();
-    timeOut = sf::seconds(DUREE_COMPORTEMENT);
+    currentComportement = comportements[nextComportementIndex].get(); // get a random comportement
+    timeOut = sf::seconds(DUREE_COMPORTEMENT); // change its comportement each 5.0f
 }

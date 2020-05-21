@@ -37,6 +37,7 @@ ComportementPeureux::update(const std::vector<ObservationBestiole>& obsBestioles
         return;
     }
 
+    // turn my back to obsBestioles
     if (obsBestioles.size() >= SEUIL_FUITE)
     {
         auto& genAlea = GenerateurAleatoire::getSingleton();
