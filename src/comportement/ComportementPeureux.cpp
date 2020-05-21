@@ -4,9 +4,9 @@
 
 #include <cmath>
 
-#include "../../include/comportement/ComportementPeureux.h"
 #include "../../include/GenerateurAleatoire.h"
 #include "../../include/Util.h"
+#include "../../include/comportement/ComportementPeureux.h"
 
 Comportement::Ptr
 ComportementPeureux::cloner()
@@ -17,7 +17,7 @@ ComportementPeureux::cloner()
 sf::Color
 ComportementPeureux::getColor() const
 {
-    return sf::Color::Magenta;
+    return sf::Color::Green;
 }
 
 const char*
