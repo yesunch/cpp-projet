@@ -81,10 +81,12 @@ Util::angle(sf::Vector2f vec1, sf::Vector2f vec2)
     auto const sign = det(vec1, vec2);
     if (sign > 0)
     {
+        // Turn counterclockwise 
         return absAngle;
     }
     else
     {
+        //  Turn clockwise
         return -absAngle;
     }
 }
