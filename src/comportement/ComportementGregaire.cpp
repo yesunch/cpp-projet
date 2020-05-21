@@ -13,13 +13,14 @@ ComportementGregaire::cloner()
 }
 
 /**
- * Get the color of ComportementGregaire which is green. It means all of the bestioles with Gregaire behavior are green.
+ * Get the color of ComportementGregaire which is green. It means all of the bestioles with Gregaire
+ * behavior are magenta.
  * @return
  */
 sf::Color
 ComportementGregaire::getColor() const
 {
-    return sf::Color::Green;
+    return sf::Color::Magenta;
 }
 
 /**
@@ -48,14 +49,15 @@ ComportementGregaire::update(std::vector<ObservationBestiole> const& obsBestiole
         return;
     }
 
-    //Get the average direction of the bestioles detected
+    // Get the average direction of the bestioles detected
     sf::Vector2f sum;
     for (auto const& obsBestiole : obsBestioles)
     {
         sum += obsBestiole.velocity;
     }
 
-    //Calculate te angle between the bestiole current direction and the average direction of the bestioles observed
+    // Calculate te angle between the bestiole current direction and the average direction of the
+    // bestioles observed
     auto const deltaRotation = Util::angle(moiMeme.getOrientation(), sum);
     moiMeme.rotate(deltaRotation * timeStep.asSeconds());
 }
