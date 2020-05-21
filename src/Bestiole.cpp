@@ -82,7 +82,6 @@ Bestiole::update(std::vector<ObservationBestiole> const& bestiolesObservees,
                  sf::Time timeStep)
 {
     auto deltaPos = getVelocity() * timeStep.asSeconds();
-    ellipse.move(deltaPos);
 
     if (comportement)
     {
