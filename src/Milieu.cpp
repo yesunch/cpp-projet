@@ -36,6 +36,7 @@ Milieu::initialiserPopulation(PopulationFactory& populationFactory)
 void
 Milieu::update(PopulationFactory& populationFactory, sf::Time timeStep)
 {
+    // Make new birth bestiole waits one timeStep
     if (tempsAvantProchaineNaissance > sf::Time::Zero)
     {
         tempsAvantProchaineNaissance -= timeStep;

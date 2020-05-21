@@ -81,14 +81,13 @@ Bestiole::update(std::vector<ObservationBestiole> const& bestiolesObservees,
                  const std::function<void()>& mourrir,
                  sf::Time timeStep)
 {
-    auto deltaPos = getVelocity() * timeStep.asSeconds();
-
     if (comportement)
     {
         comportement->update(bestiolesObservees, *this, timeStep);
         ellipse.setFillColor(comportement->getColor());
     }
 
+    auto deltaPos = getVelocity() * timeStep.asSeconds();
     ellipse.move(deltaPos);
 
     if (dureeDeVie > sf::Time::Zero)
