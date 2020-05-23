@@ -1,12 +1,12 @@
 
 #include "../../include/factory/PopParComportementFactory.h"
+#include "../../include/GenerateurAleatoire.h"
+#include "../../include/Util.h"
 #include "../../include/accessoire/Camouflage.h"
 #include "../../include/accessoire/Carapace.h"
-#include "../../include/GenerateurAleatoire.h"
 #include "../../include/accessoire/Nageoires.h"
 #include "../../include/capteur/Oreilles.h"
 #include "../../include/capteur/OreillesEtYeux.h"
-#include "../../include/Util.h"
 
 PopParComportementFactory::PopParComportementFactory(float alphaMin,
                                                      float alphaMax,
@@ -116,7 +116,7 @@ PopParComportementFactory::especeAleatoire() const
 
     auto& genAlea = GenerateurAleatoire::getSingleton();
 
-    espece.longueur = genAlea.uniformReal(15.0f, 25.0f);
+    espece.longueur = genAlea.uniformReal(30.0f, 60.0f);
     espece.epaisseur = espece.longueur * genAlea.uniformReal(0.5f, 0.75f);
     espece.dureeDeVie = sf::seconds(genAlea.uniformReal(15.0f, 45.0f));
 
@@ -154,7 +154,7 @@ PopParComportementFactory::especeAleatoire() const
             break;
 
         case YEUX:
-            espece.capteur = std::make_unique<Oreilles>(std::move(oreilles));
+            espece.capteur = std::make_unique<Yeux>(std::move(yeux));
             break;
 
         case OREILLES_ET_YEUX:
