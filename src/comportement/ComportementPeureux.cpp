@@ -1,6 +1,3 @@
-//
-// Created by quentin on 15/05/2020.
-//
 
 #include <cmath>
 

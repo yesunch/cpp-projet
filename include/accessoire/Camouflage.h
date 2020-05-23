@@ -1,7 +1,3 @@
-//
-// Created by quentin on 14/05/2020.
-//
-
 #ifndef BESTIOLES_CAMOUFLAGE_H
 #define BESTIOLES_CAMOUFLAGE_H
 

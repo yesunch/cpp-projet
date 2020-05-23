@@ -1,6 +1,3 @@
-//
-// Created by quentin on 14/05/2020.
-//
 
 #include "../../include/accessoire/Nageoires.h"
 #include <unistd.h>

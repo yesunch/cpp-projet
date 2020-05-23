@@ -1,6 +1,3 @@
-//
-// Created by quentin on 14/05/2020.
-//
 
 #include "../../include/capteur/Yeux.h"
 #include "../../include/Bestiole.h"

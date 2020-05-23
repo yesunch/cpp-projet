@@ -1,6 +1,3 @@
-//
-// Created by quentin on 14/05/2020.
-//
 
 #ifndef BESTIOLES_CARAPACE_H
 #define BESTIOLES_CARAPACE_H
