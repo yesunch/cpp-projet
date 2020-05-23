@@ -167,7 +167,7 @@ Bestiole::testOverlap(sf::Vector2f point0) const
 Collision
 Bestiole::testCollision(sf::ConvexShape const& shape) const
 {
-    auto const bords = this->ellipse.getGlobalBounds();
+    auto const bords = getGlobalBounds();
     auto const shapeBords = shape.getGlobalBounds();
     if (!bords.intersects(shapeBords))
     {
@@ -327,6 +327,28 @@ Bestiole::getCoeffResistance() const
     }
 
     return resistance;
+}
+
+sf::FloatRect
+Bestiole::getGlobalBounds() const
+{
+    auto minX = std::numeric_limits<float>::max();
+    auto minY = std::numeric_limits<float>::max();
+    auto maxX = std::numeric_limits<float>::min();
+    auto maxY = std::numeric_limits<float>::min();
+
+    auto const ellipseNbPoints = ellipse.getPointCount();
+    for (int i = 0; i < static_cast<int>(ellipseNbPoints); ++i)
+    {
+        auto const shapeTransform = ellipse.getTransform();
+        auto const pointShape = shapeTransform.transformPoint(ellipse.getPoint(i));
+        minX = std::min(minX, pointShape.x);
+        minY = std::min(minY, pointShape.y);
+        maxX = std::max(maxX, pointShape.x);
+        maxY = std::max(maxY, pointShape.y);
+    }
+
+    return { minX, minY, maxX - minX, maxY - minY };
 }
 
 Espece

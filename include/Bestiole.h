@@ -6,9 +6,9 @@
 #define BESTIOLES_BESTIOLE_H
 
 #include "Collision.h"
-#include "comportement/Comportement.h"
 #include "Espece.h"
 #include "ObservationBestiole.h"
+#include "comportement/Comportement.h"
 
 #include <vector>
 
@@ -50,6 +50,7 @@ class Bestiole : public sf::Drawable
     sf::ConvexShape const& getShape() const;
     float getCoeffResistance() const;
     Capteur::Ptr const& getCapteur() const;
+    sf::FloatRect getGlobalBounds() const;
 
     Espece clonerEspece() const;
     Comportement::Ptr clonerComportement() const;

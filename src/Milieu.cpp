@@ -119,7 +119,7 @@ Milieu::handleCollisions(sf::Time timeStep, std::vector<BestioleId>& bestiolesSu
     {
         auto pos1 = it1->getPosition();
         auto vel1 = it1->getVelocity();
-        auto const bounds1 = it1->getShape().getGlobalBounds();
+        auto const bounds1 = it1->getGlobalBounds();
         // Check if there's a collision between the bestiole and the global boundary
         // Collision on the left side of global bounday
         if (bounds1.left < bords.left)
@@ -179,8 +179,8 @@ Milieu::handleCollisions(sf::Time timeStep, std::vector<BestioleId>& bestiolesSu
                     vel2 -= 2.0f * compNormale2;
                 }
 
-                pos1 += col.normale * col.overlap;
-                pos2 -= col.normale * col.overlap;
+                pos1 += 0.5f * col.normale * col.overlap;
+                pos2 -= 0.5f * col.normale * col.overlap;
 
                 auto& genAlea = GenerateurAleatoire::getSingleton();
 
