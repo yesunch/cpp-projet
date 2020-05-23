@@ -4,8 +4,8 @@
 GenerateurAleatoire&
 GenerateurAleatoire::getSingleton()
 {
-    static GenerateurAleatoire gen;
-    return gen;
+    static GenerateurAleatoire singleton;
+    return singleton;
 }
 
 bool
